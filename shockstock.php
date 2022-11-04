@@ -44,9 +44,10 @@ function shockstock_html() {
         <h2>Shock Stock Updater</h2>
         <button onclick>Reset In-Stock Products</button>
         <p>This will remove the 'In Stock' category from all products and set all products Stock to 0.</p>
-        <h4>
-            
-        </h4>
+        <form enctype="multipart/form-data" action="uploader.php" target="uploader.php" method="POST">
+            <input type="file" id="myFile" name="myFile" style="display:block;">
+            <input type="submit" value="Upload">
+        </form>
     </div>
 <?php
 }
