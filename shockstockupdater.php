@@ -41,6 +41,7 @@ if (!class_exists('ShockStockUpdater')) {
             // Get in-stock products.
             $args = array(
                 'stock_status' => 'instock',
+                'limit' => '-1'
             );
             $products = wc_get_products($args);
             ?>
@@ -49,7 +50,7 @@ if (!class_exists('ShockStockUpdater')) {
                 <p>There are currently <b style="font-size: 1.2em;"><?php echo sizeof($products); ?></b> products in stock.</p>
                 
                 <h4>Choose a CSV file to upload that contains the updated stock quantities.</h4>
-                <form enctype="multipart/form-data" action="<?php menu_page_url('shockstockupdater') ?>" method="POST">
+                <form enctype="multipart/form-data" class="wp-upload-form" action="<?php menu_page_url('shockstockupdater') ?>" method="POST">
                     <input type="text" name="formSubmitted" value="processCSV" hidden/>
                     <input type="file" id="csvUpdatedStock" name="csvUpdatedStock" style="display:block;">
                     <?php submit_button("Upload"); ?>
@@ -109,11 +110,14 @@ if (!class_exists('ShockStockUpdater')) {
                             
                             // Check if part numbers match.
                             $atts = $prod->get_attributes();
-                            $partNumber = $atts['part-number']->get_data()['value'];
-                            foreach($uploadedProductArray as $pn) {
-                                if ($partNumber == $pn['part_number']) {
-                                    ShockStockUpdater::$outputMessage .= " Part number: $partNumber - Stock set to:  " . $pn['quantity'] . "...<br/>";
-                                    $prod->set_stock_quantity($pn['quantity']);
+                            foreach ($atts as $att) {
+                                $dat = $att->get_data();
+                                $partNumber = $dat['value'];
+                                foreach($uploadedProductArray as $pn) {
+                                    if ($partNumber == $pn['part_number']) {
+                                        ShockStockUpdater::$outputMessage .= " Part number: $partNumber - Stock set to:  " . $pn['quantity'] . "...<br/>";
+                                        $prod->set_stock_quantity($pn['quantity']);
+                                    }
                                 }
                             }
                             $prod->save();
