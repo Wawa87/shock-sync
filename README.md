@@ -1,2 +1,2 @@
-# shock-stock-updater
-Woocommerce plugin to update product inventory store-specific.
+# shock-sync
+Woocommerce plugin to update stock and prices from a CSV.
