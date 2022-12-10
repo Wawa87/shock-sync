@@ -174,6 +174,33 @@ if (!class_exists('ShockSync')) {
                 // Synchronize Price
                 if (!empty($_POST['syncAction']) && $_POST['syncAction'] == 'syncPrice') {
                     ShockSync::$outputMessage .= "Sync Action: syncPrice...<br/>";
+
+                    // If no rows were pushed to the $uploadedProductArray, don't do anything
+                    if (sizeof($uploadedProductArray) == 0) {
+                        ShockSync::$outputMessage .= "The uploaded file produced an empty product array. Check the format and try again" . "...<br/>";
+                        return;
+                    } else {
+                        ShockSync::$outputMessage .= "The uploaded file contains " . sizeof($uploadedProductArray) . " products to update...<br/>";
+                    }
+
+                    // Iterate through all products. Set the stock to 0, then if the part numbers match, update the quantity.
+                    // NOTE: If any products contain the same part number, they will both have their quantities updated.
+                    $products = wc_get_products(array('limit' => '-1'));
+                    foreach ($products as &$prod) {
+                        // Check if part numbers match.
+                        $atts = $prod->get_attributes();
+                        foreach ($atts as $att) {
+                            $dat = $att->get_data();
+                            $partNumber = $dat['value'];
+                            foreach($uploadedProductArray as $pn) {
+                                if ($partNumber == $pn['partNumber']) {
+                                    ShockSync::$outputMessage .= " Part number: $partNumber - Price set to:  " . $pn['price'] . "...<br/>";
+                                    $prod->set_regular_price($pn['price']);
+                                }
+                            }
+                        }
+                        $prod->save();
+                    }
                 }
             }
         }
