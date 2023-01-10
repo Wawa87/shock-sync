@@ -106,7 +106,7 @@ if (!class_exists('ShockSync')) {
                             continue;
                         }
                     }
-                    // Must have a Quantity if $syncAction=syncPrice
+                    // Must have a Price if $syncAction=syncPrice
                     $price = str_replace("$", "", trim($csvAsArray[$x][3]));
                     if ($syncAction == "syncPrice") {
                         if (strlen($price) == 0) {
